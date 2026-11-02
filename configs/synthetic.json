@@ -1,0 +1,15 @@
+{
+  "loss": {
+    "lambda_reg": 0
+  },
+  "optim": {
+    "eta_t": 0.001,
+    "passes_per_block": 5,
+    "batch_size": 4,
+    "k_max": 15
+  },
+  "device": "cpu",
+  "render": {
+    "backend": "soft"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "device": "cuda",
+  "render": {
+    "backend": "nvdiffrast"
+  },
+  "loss": {
+    "lambda_depth": 0.1,
+    "lambda_reg": 0.5,
+    "lambda_init": 1,
+    "epsilon": 0.5
+  },
+  "optim": {
+    "eta_rot": 0.001,
+    "eta_trans": 0.0005,
+    "eta_t": 0.0002,
+    "k_max": 15,
+    "passes_per_block": 15,
+    "batch_size": 4,
+    "tau_vel": 0.05,
+    "tol_trans_mm": 0.05,
+    "tol_rot_deg": 0.01,
+    "tol_dt_ms": 0.5
+  },
+  "planner": {
+    "alpha": 0.0005,
+    "beta": 0.0025,
+    "n_knots": 25,
+    "duration_s": 6.5
+  },
+  "stage_one": {
+    "delta_r_m": 0.1
+  }
+}
