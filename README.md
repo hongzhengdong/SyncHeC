@@ -2,8 +2,6 @@
 
 **Markerless Spatio-Temporal Hand-Eye Calibration via Differentiable Rendering and Continuous-Time Joint Optimization**
 
-Zhengdong Hong · Zhejiang University
-
 SyncHeC estimates hand-eye extrinsics and the image–joint time offset from a continuous robot motion. Continuous-time forward kinematics connects the time offset to dense mask and depth rendering losses. An alternating optimizer updates pose and time in separate mini-batch blocks.
 
 ## Installation
