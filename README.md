@@ -61,7 +61,7 @@ python run_calibration.py \
   --out runs/calibration
 ```
 
-The base-link mask belongs to the static frame selected by --static-frame, which defaults to frame 0. Stage 1 estimates the camera pose from this frame before joint space–time optimization. Set the base-cylinder radius and camera height in the configuration to the geometry of the recording.
+The base-link mask belongs to the static frame selected by `--static-frame`, which defaults to frame 0. Stage 1 estimates the camera pose from this frame before joint space–time optimization. Set the base-cylinder radius and camera height in the configuration to the geometry of the recording.
 
 To start from an existing spatial calibration:
 
@@ -73,32 +73,32 @@ python run_calibration.py \
   --out runs/calibration
 ```
 
-The initialization JSON contains a 4 × 4 matrix under the extrinsic key. The same format is written to runs/calibration/calibration.json.
+The initialization JSON contains a 4 × 4 matrix under the `extrinsic` key. The same format is written to `runs/calibration/calibration.json`.
 
 [configs/calibration.json](configs/calibration.json) selects Nvdiffrast on CUDA and uses 60 selected frames, batches of four, and 15 passes per block. With 60 frames above the temporal velocity threshold, each cycle executes 225 temporal and 225 spatial Adam updates. Optimizer moments persist across passes and cycles. The temporal gate is recomputed at the beginning of every cycle.
 
-For CPU execution, add --device cpu --backend soft. Recording inputs determine the actual image dimensions and timestamps.
+For CPU execution, add `--device cpu --backend soft`. Recording inputs determine the actual image dimensions and timestamps.
 
 ## Coordinate and time conventions
 
 | Quantity | Convention |
 | --- | --- |
-| EtH extrinsic | T_cb maps robot-base coordinates into camera coordinates |
-| EiH extrinsic | T_ce maps flange coordinates into camera coordinates |
-| Synchronized time | t_joint = t_camera − delta_t |
+| EtH extrinsic | `T_cb` maps robot-base coordinates into camera coordinates |
+| EiH extrinsic | `T_ce` maps flange coordinates into camera coordinates |
+| Synchronized time | `t_joint = t_camera - delta_t` |
 | Translation and depth | Meters |
-| Time and offsets | Seconds internally; CLI flags ending in -ms use milliseconds |
+| Time and offsets | Seconds internally; CLI flags ending in `-ms` use milliseconds |
 | Revolute joints | Radians |
 | Prismatic joints | Meters |
 | Image coordinates | x right, y down; camera z forward |
 
 The joint log must cover the selected image timestamps and the offset search interval. The optimizer bounds the offset by this coverage.
 
-Masks and depth maps are observation inputs. The function synchec.depth.fuse_metric_depth aligns predicted depth to the sensor by the median ratio on their valid overlap, preserves valid sensor measurements, and fills missing pixels. Mask residuals use the full image. Depth residuals are normalized separately for each frame and then averaged; the offset penalty is applied once per mini-batch objective.
+Masks and depth maps are observation inputs. The function `synchec.depth.fuse_metric_depth` aligns predicted depth to the sensor by the median ratio on their valid overlap, preserves valid sensor measurements, and fills missing pixels. Mask residuals use the full image. Depth residuals are normalized separately for each frame and then averaged; the offset penalty is applied once per mini-batch objective.
 
 ## Multiple cameras
 
-synchec.optimize.calibrate_multicamera accepts a list of CalibrationProblem instances and one initial extrinsic per camera. The default estimates camera-specific offsets. Set shared_offset=True for a shared offset and separate extrinsics.
+`synchec.optimize.calibrate_multicamera` accepts a list of `CalibrationProblem` instances and one initial extrinsic per camera. The default estimates camera-specific offsets. Set `shared_offset=True` for a shared offset and separate extrinsics.
 
 Shared-offset problems use the same timestamped joint log. Their temporal objective sums the camera data terms and adds one offset penalty. The shared model applies when the cameras' timing references establish offset equivalence.
 
@@ -113,25 +113,25 @@ python run_planner.py \
   --out runs/trajectory
 ```
 
-It writes joint samples to trajectory.csv and spline parameters to trajectory.json. An initial spline can be supplied through --initial-trajectory. Joint limits are enforced on the control points.
+It writes joint samples to `trajectory.csv` and spline parameters to `trajectory.json`. An initial spline can be supplied through `--initial-trajectory`. Joint limits are enforced on the control points.
 
-The planner API accepts a collision_free callback and a differentiable visibility penalty. The CLI loads these through --constraints module:function; the factory receives the robot, camera, and anchor transform and returns a dictionary of callbacks. The output records which constraints were applied. This utility performs landmark-based spline refinement; the paper's acquisition planner scores rendered pixels and uses an RRT* seed.
+The planner API accepts a `collision_free` callback and a differentiable `visibility` penalty. The CLI loads these through `--constraints module:function`; the factory receives the robot, camera, and anchor transform and returns a dictionary of callbacks. The output records which constraints were applied. This utility performs landmark-based spline refinement; the paper's acquisition planner scores rendered pixels and uses an RRT* seed.
 
 ## Package
 
 | Module | Function |
 | --- | --- |
-| config.py | Configuration and update accounting |
-| data.py | Recording I/O and optical-flow frame selection |
-| depth.py | Sensor-aligned metric depth completion |
-| fk.py | Differentiable URDF forward kinematics and mesh loading |
-| kinematics.py | Continuous-time interpolation and camera mounting models |
-| lie.py | SO(3) and SE(3) operations |
-| render.py | Soft and Nvdiffrast rendering; mask and depth objectives |
-| stage1.py | Spatial anchoring and mask refinement |
-| optimize.py | Alternating, joint, and multi-camera calibration |
-| planner.py | B-splines and excitation-based trajectory refinement |
-| synthetic.py | Synthetic robot recordings |
+| `config.py` | Configuration and update accounting |
+| `data.py` | Recording I/O and optical-flow frame selection |
+| `depth.py` | Sensor-aligned metric depth completion |
+| `fk.py` | Differentiable URDF forward kinematics and mesh loading |
+| `kinematics.py` | Continuous-time interpolation and camera mounting models |
+| `lie.py` | SO(3) and SE(3) operations |
+| `render.py` | Soft and Nvdiffrast rendering; mask and depth objectives |
+| `stage1.py` | Spatial anchoring and mask refinement |
+| `optimize.py` | Alternating, joint, and multi-camera calibration |
+| `planner.py` | B-splines and excitation-based trajectory refinement |
+| `synthetic.py` | Synthetic robot recordings |
 
 ## Citation
 
